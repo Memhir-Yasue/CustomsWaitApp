@@ -11,13 +11,12 @@ def open_file(path):
     else:
         subprocess.Popen(["xdg-open", path])
 
-
 def read_n_preprocess(path):
-    # path = 'output/by_Y_M.csv'
-    df = pd.read_csv(path)
-    df.drop('Unnamed: 0',axis = 1, inplace = True)
-    # df.columns = ['Airport','Month','Average Wait Time (min)']
-    return df
+        # path = 'output/by_Y_M.csv'
+        df = pd.read_csv(path)
+        df.drop('Unnamed: 0',axis = 1, inplace = True)
+        # df.columns = ['Airport','Month','Average Wait Time (min)']
+        return df
 
 def make_airport_column(df):
     airport_column = []
@@ -95,7 +94,7 @@ def remove_na(df_list):
         clean_df_list.append(df_clean)
     return clean_df_list
 
-def final_concat(df,clean_df_list):
+def final_concat(clean_df_list):
     all_years_data = pd.concat(clean_df_list)
     return all_years_data
 
@@ -107,6 +106,6 @@ if __name__ == "__main__":
     df = read_n_preprocess(path)
     dirty_yearly_list = process_by_year(df)
     clean_yearly_list = remove_na(dirty_yearly_list)
-    final_df = final_concat(df,clean_yearly_list)
+    final_df = final_concat(clean_yearly_list)
     save(final_df)
     open_file(path="output")
