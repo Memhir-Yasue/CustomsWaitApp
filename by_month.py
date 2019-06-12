@@ -11,12 +11,11 @@ def open_file(path):
     else:
         subprocess.Popen(["xdg-open", path])
 
-def read_n_preprocess(path):
-        # path = 'output/by_Y_M.csv'
-        df = pd.read_csv(path)
-        df.drop('Unnamed: 0',axis = 1, inplace = True)
-        # df.columns = ['Airport','Month','Average Wait Time (min)']
-        return df
+def read_n_preprocess(file):
+    df = pd.read_csv(file)
+    df.drop('Unnamed: 0',axis = 1, inplace = True)
+    # df.columns = ['Airport','Month','Average Wait Time (min)']
+    return df
 
 def make_airport_column(df):
     airport_column = []
@@ -98,14 +97,22 @@ def final_concat(clean_df_list):
     all_years_data = pd.concat(clean_df_list)
     return all_years_data
 
-def save(new_df):
-    new_df.to_excel("output/Month by Month Report.xls",index = False)
+def save(new_df,cwd):
+    new_df.to_excel(cwd + "/Month by Month Report.xls",index = False)
+
+def set_curr_dir(dir):
+    path = dir
+    os.chdir(path)
+    return path
 
 if __name__ == "__main__":
-    path = 'output/by_Y_M.csv'
-    df = read_n_preprocess(path)
+    # path = 'output/by_Y_M.csv'
+    path = set_curr_dir('output')
+    # cwd = .../output
+    cwd = os.getcwd()
+    df = read_n_preprocess(file = cwd + '/by_Y_M.csv')
     dirty_yearly_list = process_by_year(df)
     clean_yearly_list = remove_na(dirty_yearly_list)
     final_df = final_concat(clean_yearly_list)
-    save(final_df)
-    open_file(path="output")
+    save(final_df,cwd)
+    open_file(path=cwd)

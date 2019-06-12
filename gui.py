@@ -31,52 +31,25 @@ class CustomsGUI(tkinter.Tk):
         y_cord = (screen_height/2) - (window_height/2)
         window.geometry("%dx%d+%d+%d" % (window_width,window_height,x_cord,y_cord))
 
+
+
     def process(self):
         response = tkinter.messagebox.askquestion("Warning","Are you sure you want to proceed? Previous graphs will get replaced")
         if response == 'yes':
             # cwd = str(os.getcwd())
-            if getattr(sys, 'frozen', False):
-                # If the application is run as a bundle, the pyInstaller bootloader
-                # extends the sys module by a flag frozen=True and sets the app
-                # path into variable _MEIPASS'.
-                PROJECT_ROOT = sys.executable
-            else:
-                PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+            def resource_path(relative_path):
+                if hasattr(sys, '_MEIPASS'):
+                    return os.path.join(sys._MEIPASS, relative_path)
+                return os.path.join(os.path.abspath("."), relative_path)
 
-            pwd = os.path.dirname(PROJECT_ROOT)
+            # pwd = os.path.dirname(PROJECT_ROOT)
 
-            messagebox.showinfo('Info', 'Please wait a moment')
-            subprocess.call(['python', pwd + '/Customs.py'], shell = False)
-            subprocess.call(['Rscript', pwd + '/r_script.R'], shell=False)
-            subprocess.call(['python', pwd + '/by_month.py'], shell = False)
+            messagebox.showinfo('Info', 'Please wait a moment'+os.path.abspath(__file__))
+            subprocess.call(['python', resource_path('Customs.py')], shell = False)
+            subprocess.call(['Rscript', resource_path('rscript.R')], shell=False)
+            subprocess.call(['python', resource_path('by_month.py')], shell = False)
             messagebox.showinfo('Info', 'Process completed for '+str(self.entry.get()))
 
 if __name__ == '__main__':
     window = CustomsGUI()
     window.mainloop()
-
-
-
-
-# window = tkinter.Tk()
-#
-# window_width = 450
-# window_height = 300
-# set_window_size(window,window_height,window_width)
-# window.title("Customs wait time processor")
-#
-# disp = Label(text = "Please enter the year(s) you want to report seperated by a comma")
-#
-# years_entry = tkinter.Entry(window) # this is placed in 0 1
-#
-# btn_process = tkinter.Button(window, text = "Make charts",highlightbackground = 'green',height = 5, width = 10, command = hide_window)
-#
-# btn_quit = tkinter.Button(window, text = 'Exit', highlightbackground='red', height = 5, width = 10,command = quit)
-#
-# disp.grid(row=0, column=2, pady=5)
-# years_entry.grid(row = 1, column = 2, pady=10)
-#
-# btn_process.grid(row = 3, column = 2,pady=10)
-# btn_quit.grid(row = 5, column = 2)
-#
-# window.mainloop()
