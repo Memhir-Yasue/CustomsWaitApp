@@ -2,8 +2,7 @@ import tkinter
 import tkinter.messagebox
 from tkinter import *
 import subprocess
-import sys
-from functools import partial
+import sys, os
 
 
 class CustomsGUI(tkinter.Tk):
@@ -35,14 +34,26 @@ class CustomsGUI(tkinter.Tk):
     def process(self):
         response = tkinter.messagebox.askquestion("Warning","Are you sure you want to proceed? Previous graphs will get replaced")
         if response == 'yes':
-          messagebox.showinfo('Info', 'Please wait a momment')
-          subprocess.call(['python', 'Customs.py'], shell = False)
-          subprocess.check_call(['Rscript', 'r_script.R'], shell=False)
-          subprocess.call(['python', 'by_month.py'], shell = False)
-          messagebox.showinfo('Info', 'Process completed for '+str(self.entry.get()))
+            # cwd = str(os.getcwd())
+            if getattr(sys, 'frozen', False):
+                # If the application is run as a bundle, the pyInstaller bootloader
+                # extends the sys module by a flag frozen=True and sets the app
+                # path into variable _MEIPASS'.
+                PROJECT_ROOT = sys.executable
+            else:
+                PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-window = CustomsGUI()
-window.mainloop()
+            pwd = os.path.dirname(PROJECT_ROOT)
+
+            messagebox.showinfo('Info', 'Please wait a moment')
+            subprocess.call(['python', pwd + '/Customs.py'], shell = False)
+            subprocess.call(['Rscript', pwd + '/r_script.R'], shell=False)
+            subprocess.call(['python', pwd + '/by_month.py'], shell = False)
+            messagebox.showinfo('Info', 'Process completed for '+str(self.entry.get()))
+
+if __name__ == '__main__':
+    window = CustomsGUI()
+    window.mainloop()
 
 
 
