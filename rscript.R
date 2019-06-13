@@ -8,6 +8,30 @@ df = read.csv('output/output.csv')
 df <- df %>%
   mutate(Date = mdy(Date))
 
+by_Y <- df %>%
+  select(Airport,Date,All.Avrg.Wait) %>%
+  mutate(Year = year(Date),) %>%
+  group_by(Year,Airport) %>%
+  summarise(Average_wait_time = round(mean(All.Avrg.Wait),digits=2), )
+by_Y
+
+# Grouped
+
+ggplot(by_Y, aes(fill = Airport, x=Airport, y = Average_wait_time)) +
+  geom_bar(position="dodge", stat="identity") +
+  facet_wrap(~Year)
+
+
+ggplot(data=by_Y, aes(x=Year, y = Average_wait_time))+
+  geom_bar(stat="identity",aes(fill=Year)) +
+  ggtitle("Average Wait Times") +
+  xlab('Airport') +
+  ylab('Minutes')
+
+
+
+
+
 by_Y_M <- df %>%
   select(Airport,Date,All.Avrg.Wait) %>%
   mutate(Year = year(Date),

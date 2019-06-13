@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import platform
+import calendar
 import subprocess
 
 # script_path = os.path.dirname(os.path.realpath(__file__))
@@ -63,7 +64,7 @@ def make_year_col_df(df,year):
     return some_df
 
 def make_month_col_df(num_months):
-    month_df = pd.DataFrame({'Month':[i+1 for i in range(num_months)]})
+    month_df = pd.DataFrame({'Month':[int(i+1) for i in range(num_months)]})
     return month_df
 
 def process_by_year(df):
@@ -99,6 +100,11 @@ def remove_na(df_list):
 
 def final_concat(clean_df_list):
     all_years_data = pd.concat(clean_df_list)
+    look_up = { 1.0: 'Jan', 2.0: 'Feb', 3.0: 'Mar', 4.0: 'Apr', 5.0:
+               'May', 6.0: 'Jun', 7.0: 'Jul', 8.0: 'Aug', 9.0: 'Sep', 10.0: 'Oct',
+               11.0: 'Nov', 12.0: 'Dec'}
+
+    all_years_data['Month'] = all_years_data['Month'].apply(lambda x: look_up[x])
     return all_years_data
 
 def save(new_df,cwd):
@@ -127,7 +133,6 @@ def main(exe_dir):
     os.chdir(exe_path)
     open_file(path=os.path.join(exe_path,'output'))
     print("--"*25)
-
 
 # if __name__ == "__main__":
 #     # path = 'output/by_Y_M.csv'
