@@ -3,6 +3,8 @@ import tkinter.messagebox
 from tkinter import *
 import subprocess
 import sys, os
+from Customs import Automater
+import by_month
 
 
 class CustomsGUI(tkinter.Tk):
@@ -31,23 +33,19 @@ class CustomsGUI(tkinter.Tk):
         y_cord = (screen_height/2) - (window_height/2)
         window.geometry("%dx%d+%d+%d" % (window_width,window_height,x_cord,y_cord))
 
-
-
     def process(self):
         response = tkinter.messagebox.askquestion("Warning","Are you sure you want to proceed? Previous graphs will get replaced")
+
         if response == 'yes':
-            # cwd = str(os.getcwd())
             def resource_path(relative_path):
-                if hasattr(sys, '_MEIPASS'):
-                    return os.path.join(sys._MEIPASS, relative_path)
+                if hasattr(sys, 'executable'):
+                    return os.path.join(sys.executable, relative_path)
                 return os.path.join(os.path.abspath("."), relative_path)
-
-            # pwd = os.path.dirname(PROJECT_ROOT)
-
-            messagebox.showinfo('Info', 'Please wait a moment'+os.path.abspath(__file__))
-            subprocess.call(['python', resource_path('Customs.py')], shell = False)
+            PROJECT_ROOT = resource_path(__file__)
+            messagebox.showinfo('Info', 'Please wait a moment'+PROJECT_ROOT)
+            Automater.main()
             subprocess.call(['Rscript', resource_path('rscript.R')], shell=False)
-            subprocess.call(['python', resource_path('by_month.py')], shell = False)
+            by_month.main()
             messagebox.showinfo('Info', 'Process completed for '+str(self.entry.get()))
 
 if __name__ == '__main__':

@@ -3,6 +3,8 @@ import os
 import platform
 import subprocess
 
+script_path = os.path.dirname(os.path.realpath(__file__))
+
 def open_file(path):
     if platform.system() == "Windows":
         os.startfile(path)
@@ -11,7 +13,9 @@ def open_file(path):
     else:
         subprocess.Popen(["xdg-open", path])
 
-def read_n_preprocess(file):
+def read_n_preprocess(dir):
+    os.chdir(dir)
+    file = 'by_Y_M.csv'
     df = pd.read_csv(file)
     df.drop('Unnamed: 0',axis = 1, inplace = True)
     # df.columns = ['Airport','Month','Average Wait Time (min)']
@@ -99,20 +103,38 @@ def final_concat(clean_df_list):
 
 def save(new_df,cwd):
     new_df.to_excel(cwd + "/Month by Month Report.xls",index = False)
+    print("**"*25)
 
 def set_curr_dir(dir):
     path = dir
     os.chdir(path)
     return path
 
-if __name__ == "__main__":
-    # path = 'output/by_Y_M.csv'
-    path = set_curr_dir('output')
+def main():
     # cwd = .../output
-    cwd = os.getcwd()
-    df = read_n_preprocess(file = cwd + '/by_Y_M.csv')
+    # path = 'output/by_Y_M.csv'
+    # path = set_curr_dir('output')
+    # # cwd = .../output
+    print(os.path.join(script_path,'output'), "&"*15)
+    df = read_n_preprocess(dir = os.path.join(script_path,'output') )
     dirty_yearly_list = process_by_year(df)
     clean_yearly_list = remove_na(dirty_yearly_list)
     final_df = final_concat(clean_yearly_list)
+    cwd = os.getcwd()
     save(final_df,cwd)
-    open_file(path=cwd)
+    os.chdir(script_path)
+    open_file(path=os.path.join(script_path,'output'))
+    print("--"*25)
+
+
+# if __name__ == "__main__":
+#     # path = 'output/by_Y_M.csv'
+#     path = set_curr_dir('output')
+#     # cwd = .../output
+#     cwd = os.getcwd()
+#     df = read_n_preprocess(file = cwd + '/by_Y_M.csv')
+#     dirty_yearly_list = process_by_year(df)
+#     clean_yearly_list = remove_na(dirty_yearly_list)
+#     final_df = final_concat(clean_yearly_list)
+#     save(final_df,cwd)
+#     open_file(path=cwd)

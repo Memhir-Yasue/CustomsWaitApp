@@ -1,11 +1,13 @@
 import pandas as pd
 import glob
 import os
+from os import listdir
 
 class Automater:
 
     def __init__(self):
         print(os.listdir())
+        self.script_path = os.path.dirname(os.path.realpath(__file__))
         self.path = None
         self.raw_file_extension = None
         self.concatinated_df = None
@@ -13,16 +15,22 @@ class Automater:
 
 
     def set_curr_dir(self,dir):
-        path = dir
-        os.chdir(path)
-        self.path = path
+        path = os.path.dirname(os.path.realpath(__file__))
+        self.path = os.path.join(path,dir)
+        os.chdir(self.path)
+
+    def reset_pwd(self):
+        os.chdir(self.script_path)
 
     def curr_dir_XType_files(self,extension):
         """
         Enter '.xls' if that's the extension name of the data file
         """
         self.raw_file_extension = extension
+        path_to_dir = self.path
+        os.chdir(path_to_dir)
         result = glob.glob('*.{}'.format(extension))
+        print(result,"^"*20)
         return result
 
     def htm_to_df(self):
@@ -30,10 +38,11 @@ class Automater:
         converts from an htm file type to a pandas dataframe.
         Note the xls file from the awt.cbo.gov is recognized as html by pandas
         """
-        result = self.curr_dir_XType_files(self.raw_file_extension)
+        files = self.curr_dir_XType_files(self.raw_file_extension)
         df_list = []
-        for files in result:
-            df_Xtype = pd.read_html(files)
+        for file in files:
+            print(file,"^"*10)
+            df_Xtype = pd.read_html(file)
             df_Xtype = df_Xtype[0]
             self.total_entries += len(df_Xtype.index)
             df_list.append(df_Xtype)
@@ -70,16 +79,22 @@ class Automater:
     def output_csv(self):
         df = self.concatinated_df
         df.to_csv('output.csv')
+        print(os.getcwd())
         print("Sucessfully wrote output file")
 
+    def main():
+        robo = Automater()
+        robo.set_curr_dir('drop_here')
+        htm_files = robo.curr_dir_XType_files('xls')
 
-if __name__ == "__main__":
-    robo = Automater()
-    robo.set_curr_dir('drop_here')
-    htm_files = robo.curr_dir_XType_files('xls')
-    dirty_df_list = robo.htm_to_df()
-    clean_df_list = robo.pre_process_df(dirty_df_list)
-    robo.concatinate_df(clean_df_list)
-    robo.set_curr_dir('..')
-    robo.set_curr_dir('output')
-    robo.output_csv()
+        dirty_df_list = robo.htm_to_df()
+        clean_df_list = robo.pre_process_df(dirty_df_list)
+        robo.concatinate_df(clean_df_list)
+        robo.set_curr_dir('..')
+        robo.set_curr_dir('output')
+        robo.output_csv()
+        robo.reset_pwd()
+
+
+
+# if __name__ == "__main__":
