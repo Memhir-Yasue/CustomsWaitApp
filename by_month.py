@@ -3,7 +3,7 @@ import os
 import platform
 import subprocess
 
-script_path = os.path.dirname(os.path.realpath(__file__))
+# script_path = os.path.dirname(os.path.realpath(__file__))
 
 def open_file(path):
     if platform.system() == "Windows":
@@ -110,20 +110,22 @@ def set_curr_dir(dir):
     os.chdir(path)
     return path
 
-def main():
+def main(exe_dir):
     # cwd = .../output
     # path = 'output/by_Y_M.csv'
     # path = set_curr_dir('output')
     # # cwd = .../output
-    print(os.path.join(script_path,'output'), "&"*15)
-    df = read_n_preprocess(dir = os.path.join(script_path,'output') )
+    exe_path = os.path.dirname(os.path.dirname(exe_dir))
+    os.chdir(exe_path)
+    print(os.path.join(exe_path,'output'), "&"*15)
+    df = read_n_preprocess(dir = os.path.join(exe_path,'output') )
     dirty_yearly_list = process_by_year(df)
     clean_yearly_list = remove_na(dirty_yearly_list)
     final_df = final_concat(clean_yearly_list)
     cwd = os.getcwd()
     save(final_df,cwd)
-    os.chdir(script_path)
-    open_file(path=os.path.join(script_path,'output'))
+    os.chdir(exe_path)
+    open_file(path=os.path.join(exe_path,'output'))
     print("--"*25)
 
 

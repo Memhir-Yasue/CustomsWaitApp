@@ -40,12 +40,16 @@ class CustomsGUI(tkinter.Tk):
             def resource_path(relative_path):
                 if hasattr(sys, 'executable'):
                     return os.path.join(sys.executable, relative_path)
+                elif hasattr(sys, '_MEIPASS'):
+                    return os.path.join(sys._MEIPASS, relative_path)
                 return os.path.join(os.path.abspath("."), relative_path)
             PROJECT_ROOT = resource_path(__file__)
-            messagebox.showinfo('Info', 'Please wait a moment'+PROJECT_ROOT)
-            Automater.main()
-            subprocess.call(['Rscript', resource_path('rscript.R')], shell=False)
-            by_month.main()
+            messagebox.showinfo('Info', 'Please wait a moment'+os.path.dirname(resource_path('rscript.R')) + "----" + os.path.dirname(os.path.dirname(resource_path('rscript.R'))))
+            Automater.main(PROJECT_ROOT)
+            # ideal_dir/gui/rscript.r  gui needs to GO!
+            exe_path = os.path.dirname(os.path.dirname(resource_path('rscript.R')))
+            subprocess.call(['Rscript',exe_path+'/rscript.R' ], shell=False)
+            by_month.main(PROJECT_ROOT)
             messagebox.showinfo('Info', 'Process completed for '+str(self.entry.get()))
 
 if __name__ == '__main__':

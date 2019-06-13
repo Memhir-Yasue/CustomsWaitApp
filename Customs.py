@@ -5,19 +5,22 @@ from os import listdir
 
 class Automater:
 
-    def __init__(self):
-        print(os.listdir())
-        self.script_path = os.path.dirname(os.path.realpath(__file__))
-        self.path = None
+    def __init__(self,exe_dir):
+        # a constant
+        self.script_path = os.path.dirname(os.path.dirname(exe_dir))
+        # nested because it's a
+        # where_I_want_to_be_at/gui/gui.exe
+        self.path = os.path.dirname(os.path.dirname(exe_dir))
         self.raw_file_extension = None
         self.concatinated_df = None
         self.total_entries = 0
 
 
     def set_curr_dir(self,dir):
-        path = os.path.dirname(os.path.realpath(__file__))
+        path = self.path
         self.path = os.path.join(path,dir)
         os.chdir(self.path)
+        print(os.listdir())
 
     def reset_pwd(self):
         os.chdir(self.script_path)
@@ -82,8 +85,8 @@ class Automater:
         print(os.getcwd())
         print("Sucessfully wrote output file")
 
-    def main():
-        robo = Automater()
+    def main(exe_dir):
+        robo = Automater(exe_dir)
         robo.set_curr_dir('drop_here')
         htm_files = robo.curr_dir_XType_files('xls')
 
